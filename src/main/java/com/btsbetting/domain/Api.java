@@ -3,6 +3,8 @@ package com.btsbetting.domain;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.btsbetting.domain.fixture.Fixture;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

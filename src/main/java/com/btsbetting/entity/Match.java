@@ -1,4 +1,4 @@
-package com.btsbetting.domain;
+package com.btsbetting.entity;
 
 import java.util.Map;
 

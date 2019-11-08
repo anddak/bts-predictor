@@ -1,10 +1,15 @@
 package com.btsbetting.client;
 
 import com.btsbetting.domain.ApiWrapper;
+import com.btsbetting.utils.ApiCallCountUtil;
 import org.springframework.http.*;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class ApiFootballClient {
+
+    private ApiCallCountUtil apiCallCountUtil = new ApiCallCountUtil();
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -25,6 +30,7 @@ public class ApiFootballClient {
         HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
         ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request , ApiWrapper.class);
 
+        ApiCallCountUtil.apiCallsMade += 1;
         return response.getBody();
     }
 
@@ -38,6 +44,7 @@ public class ApiFootballClient {
         HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
         ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request , ApiWrapper.class);
 
+        ApiCallCountUtil.apiCallsMade += 1;
         return response.getBody();
     }
 

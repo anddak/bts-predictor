@@ -1,8 +1,13 @@
 package com.btsbetting.service;
 
 import com.btsbetting.client.ApiFootballClient;
-import com.btsbetting.domain.Fixture;
-import com.btsbetting.domain.Prediction;
+import com.btsbetting.constants.LeagueConstants;
+import com.btsbetting.domain.fixture.Fixture;
+import com.btsbetting.entity.Prediction;
+import com.btsbetting.entity.Predictions;
+import com.btsbetting.utils.ApiCallCountUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,17 +17,26 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+@Service
 public class PredictionsService {
 
 
 
-    private ApiFootballClient apiFootballClient = new ApiFootballClient();
+    private ApiFootballClient apiFootballClient;
 
-    private Fixture fixture;
+    private ApiCallCountUtil apiCallCountUtil;
+
+    @Autowired
+    public PredictionsService(ApiFootballClient apiFootballClient, ApiCallCountUtil apiCallCountUtil) {
+        this.apiFootballClient = apiFootballClient;
+        this.apiCallCountUtil = apiCallCountUtil;
+    }
 
     public List<Fixture> refineMatchesByDate(String date) {
        return apiFootballClient.getFixturesByDate(date).getApi().getFixtures();
+
     }
+
 
     /**
      *
@@ -37,12 +51,22 @@ public class PredictionsService {
      * from the refined list of fixtures find home and away team id's
      * @return a list of map where each map contains the home and away team's id of a given game
      */
-    public List<Map<String, Integer>> findFixtureTeamIds() {
+    public List<Map<String, Integer>> findFixtureTeamIds(String date) {
 
         List<Map<String, Integer>> teamIds = new ArrayList<>();
 
-        List<Fixture> matchesByDate = refineMatchesByDate("2019-11-08");
-        List<Fixture> matchesByLeagueAndDate = refineMatchesByLeague(matchesByDate, 525); //gets all matches from a specific league on a specific date
+        List<Fixture> matchesByDate = refineMatchesByDate(date);
+
+        List<Fixture> matchesByLeagueAndDate = new ArrayList<>();
+
+        List<Integer> leagueIds
+                = LeagueConstants.getLeagueIds();
+
+        for(Integer id : leagueIds) {
+            matchesByLeagueAndDate.addAll(refineMatchesByLeague(matchesByDate, id));
+        }
+
+
 
         for (Fixture f : matchesByLeagueAndDate) {
             Map<String, Integer> match = new HashMap<>();
@@ -57,8 +81,7 @@ public class PredictionsService {
 
     /**
      *
-     * @param apiFootballClient
-     * @return a teams list of finished fixtures from the past 6 weeks based on team id to use the past 6 fixtures from it
+     * @return a teams list of finished fixtures from the past 6 weeks based on team id
      */
     public List<Fixture> getRelevantFixturesByTeamId(int teamId) {
 
@@ -69,13 +92,23 @@ public class PredictionsService {
 
     }
 
-    public List<Prediction> calculatePoints() {
-        List<Map<String, Integer>> matchesByTeamIds = findFixtureTeamIds();
+//    /**
+//     * method to narrow down the fixtures to the ones we concern about - last 6 games, no friendlies
+//     *
+//     * @param fixturesByTeamId all fixtures for a team specified by an id
+//     * @return a list of the last 6 fixtures, friendlies excluded
+//     */
+//    public  List<Fixture> filterRelevantMatches(Map<String, Integer> fixturesByTeamId) {
+//
+//    }
+
+    public Predictions calculatePoints(List<Map<String, Integer>> matchesByTeamIds) {
 
         String homeTeam;
         String awayTeam;
-        int homePoints = 0;
-        int awayPoints = 0;
+        int matchLeagueId;
+        double homePoints = 0;
+        double awayPoints = 0;
         List<Prediction> predictions = new ArrayList<>();
 
 
@@ -97,8 +130,11 @@ public class PredictionsService {
              */
             if (homeRelevantMatches.get(0).getHomeTeam().getTeamId().equals(m.get("h"))) {
                  homeTeam = homeRelevantMatches.get(0).getHomeTeam().getTeamName();
+                 matchLeagueId = homeRelevantMatches.get(0).getLeagueId();
+
             } else {
                  homeTeam = homeRelevantMatches.get(0).getAwayTeam().getTeamName();
+                 matchLeagueId = homeRelevantMatches.get(0).getLeagueId();
             }
 
             if (awayRelevantMatches.get(0).getHomeTeam().getTeamId().equals(m.get("a"))) {
@@ -151,19 +187,30 @@ public class PredictionsService {
 
             }
 
-           int totalPoints = homePoints + awayPoints;
+           double totalPoints = homePoints + awayPoints;
             predictions.add(new Prediction(homeTeam, awayTeam, totalPoints));
             homePoints = 0;
             awayPoints = 0;
         }
 
-        return predictions;
+
+        int totalGames = predictions.size();
+        predictions = predictions.stream().filter(p -> (p.getPrediction() >= 16.5)).collect(Collectors.toList());
+
+        apiCallCountUtil.countCalls();
+
+        return new Predictions(totalGames, predictions);
 
     }
 
+    //-------------------------------------------------------//
+
+    private void getPointsWhenGoallessDraw(List<Fixture> relevantMatches) {
+
+    }
 
 }
 
+
 //TODO: add favourite point adjustment
 //TODO: refactor code
-//TODO: add controller

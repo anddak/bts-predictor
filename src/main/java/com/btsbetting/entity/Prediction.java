@@ -1,6 +1,7 @@
-package com.btsbetting.domain;
+package com.btsbetting.entity;
 
 public class Prediction {
+
 
     String homeTeam;
     String awayTeam;
@@ -24,10 +25,11 @@ public class Prediction {
         return prediction;
     }
 
+
     @Override
     public String toString() {
         return "Prediction{" +
-                "homeTeam='" + homeTeam + '\'' +
+                ", homeTeam='" + homeTeam + '\'' +
                 ", awayTeam='" + awayTeam + '\'' +
                 ", prediction=" + prediction +
                 '}';

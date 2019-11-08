@@ -1,4 +1,4 @@
-package com.btsbetting.domain;
+package com.btsbetting.domain.fixture;
 
 import java.util.HashMap;
 import java.util.Map;

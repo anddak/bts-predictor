@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.btsbetting.domain.coach.Coach;
 import com.btsbetting.domain.fixture.Fixture;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -21,10 +22,22 @@ public class Api {
 
     @JsonProperty("results")
     private Integer results;
+    @JsonProperty("coachs")
+    public List<Coach> coachs = null;
     @JsonProperty("fixtures")
     private List<Fixture> fixtures = null;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonProperty("coachs")
+    public List<Coach> getCoachs() {
+        return coachs;
+    }
+
+    @JsonProperty("coachs")
+    public void setCoachs(List<Coach> coachs) {
+        this.coachs = coachs;
+    }
 
     @JsonProperty("results")
     public Integer getResults() {

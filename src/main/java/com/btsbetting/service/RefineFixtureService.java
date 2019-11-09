@@ -9,7 +9,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,4 +108,46 @@ public class RefineFixtureService {
         return fixtures;
     }
 
+    /**
+     * method to remove all games where the manager started in the past 60 days
+     *
+     * @param m the Match to be predicted
+     * @return true if none of the coach started in the past 60 days, false otherwise
+     */
+    boolean isCoachEmployedForLongEnoughRefine(Match m) {
+
+        boolean flag = true;
+
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        LocalDate cutoffDate = LocalDate.now().minusDays(60);
+        LocalDate coachStartDate;
+
+        for (Integer i : m.getTeamId().values()) {
+
+            try {
+                coachStartDate = format.parse(new ArrayList<>(
+                        apiFootballClient.getCoachByTeamId(i)
+                                .getApi()
+                                .getCoachs())
+                        .get(0)
+                        .getCareer()
+                        .get(0)
+                        .getStart())
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+
+                if (cutoffDate.compareTo(coachStartDate) < 0) {
+                    flag = false;
+                    LOGGER.info("Coach started in the past 60 days, match excluded: {}", i);
+                    break;
+                }
+            } catch (ParseException e) {
+                LOGGER.error("Unable to parse coachStartDate for match: {}", i, e);
+            } catch (IndexOutOfBoundsException e) {
+                LOGGER.error("Currently one of the teams from match {} don't have a manager or the API is missing data", i, e);
+            }
+        }
+        return flag;
+    }
 }

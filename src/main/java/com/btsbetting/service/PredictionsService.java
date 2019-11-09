@@ -38,11 +38,15 @@ public class PredictionsService {
             homeTeamId = m.getTeamId().get("h");
             awayTeamId = m.getTeamId().get("a");
 
-            List<Fixture> homeRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(homeTeamId);
-            List<Fixture> awayRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(awayTeamId);
+            if (refineFixtureService.isCoachEmployedForLongEnoughRefine(m)) {
 
-            double totalPoints = calculationService.sumPoints(homeRelevantMatches, homeTeamId) + calculationService.sumPoints(awayRelevantMatches, awayTeamId);
-            predictions.add(new Prediction(m.getHomeTeamName(), m.getAwayTeamName(), totalPoints));
+                List<Fixture> homeRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(homeTeamId);
+                List<Fixture> awayRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(awayTeamId);
+
+                double totalPoints = calculationService.sumPoints(homeRelevantMatches, homeTeamId) + calculationService.sumPoints(awayRelevantMatches, awayTeamId);
+                predictions.add(new Prediction(m.getHomeTeamName(), m.getAwayTeamName(), totalPoints));
+
+            }
         }
 
         apiCallCountUtil.countCalls();
@@ -63,5 +67,4 @@ public class PredictionsService {
 
 //TODO: add all docs
 //TODO: add favourite point adjustment
-//TODO: add team name
-//TODO: add coach adjustment
+//TODO: add league - todo this, I need to convert league constants to enum

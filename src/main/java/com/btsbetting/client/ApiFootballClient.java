@@ -1,6 +1,7 @@
 package com.btsbetting.client;
 
 import com.btsbetting.constants.FootballApiConstants;
+import com.btsbetting.constants.LocalApiConstants;
 import com.btsbetting.domain.ApiWrapper;
 import com.btsbetting.utils.ApiCallCountUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,20 @@ public class ApiFootballClient {
         String url = FootballApiConstants.GET_FIXTURES_BY_TEAM_ID +
                 teamId +
                 FootballApiConstants.TIMEZONE_URL;
+
+        header.set(FootballApiConstants.API_HEADER, FootballApiConstants.API_KEY);
+        header.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
+        ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request, ApiWrapper.class);
+
+        apiCallCountUtil.setApiCallsMade(apiCallCountUtil.getApiCallsMade()+1);
+        return response.getBody();
+    }
+
+    public ApiWrapper getCoachByTeamId(int teamId) {
+
+        String url = FootballApiConstants.GET_COACH_BY_TEAM_ID + teamId;
 
         header.set(FootballApiConstants.API_HEADER, FootballApiConstants.API_KEY);
         header.setContentType(MediaType.APPLICATION_JSON);

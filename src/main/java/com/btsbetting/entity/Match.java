@@ -7,6 +7,7 @@ public class Match {
     private Map<String, Integer> teamId;
     private String homeTeamName;
     private String awayTeamName;
+    int leagueId;
 
 
     public Match(Map<String, Integer> teamId, String homeTeamName, String awayTeamName) {

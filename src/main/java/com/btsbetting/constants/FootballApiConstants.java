@@ -4,6 +4,7 @@ public class FootballApiConstants {
 
     public static final String GET_FIXTURES_BY_DATE_URL = "https://api-football-v1.p.rapidapi.com/v2/fixtures/date/";
     public static final String GET_FIXTURES_BY_TEAM_ID = "https://api-football-v1.p.rapidapi.com/v2/fixtures/team/";
+    public static final String GET_COACH_BY_TEAM_ID = "https://api-football-v1.p.rapidapi.com/v2/coachs/team/";
     public static final String TIMEZONE_URL = "?timezone=Europe/London";
 
     public static final String API_HEADER = "X-RapidAPI-Key";

@@ -6,6 +6,8 @@ import com.btsbetting.domain.fixture.Fixture;
 import com.btsbetting.entity.Prediction;
 import com.btsbetting.entity.Predictions;
 import com.btsbetting.utils.ApiCallCountUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,9 @@ import java.util.stream.Collectors;
 public class PredictionsService {
 
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PredictionsService.class);
 
     private ApiFootballClient apiFootballClient;
-
     private ApiCallCountUtil apiCallCountUtil;
 
     @Autowired
@@ -86,27 +88,27 @@ public class PredictionsService {
     public List<Fixture> getRelevantFixturesByTeamId(int teamId) {
 
         long currentUnixTime = Instant.now().getEpochSecond();
-        List<Fixture> fixtures = apiFootballClient.getFixturesByTeamId(teamId).getApi().getFixtures();
+        List<Fixture> fixtures = apiFootballClient.getFixturesByTeamId(teamId).getApi().getFixtures()
+                .stream()
+                .filter(fixture -> fixture.getStatusShort().equals("FT")
+                        && ((currentUnixTime - fixture.getEventTimestamp()) < 5184000)
+                        && (fixture.getLeagueId() != 803)).collect(Collectors.toList());
 
-        return fixtures.stream().filter(fixture -> fixture.getStatusShort().equals("FT") && (currentUnixTime - fixture.getEventTimestamp()  < 5184000) && fixture.getLeagueId() != 803).collect(Collectors.toList());
+        try {
+            fixtures = fixtures.subList(fixtures.size() - 6, fixtures.size());
+        } catch (IndexOutOfBoundsException e) {
+            LOGGER.error("Team " + teamId + "had less than 6 games in the past 60 days", e);
+        }
 
+       return fixtures;
     }
-
-//    /**
-//     * method to narrow down the fixtures to the ones we concern about - last 6 games, no friendlies
-//     *
-//     * @param fixturesByTeamId all fixtures for a team specified by an id
-//     * @return a list of the last 6 fixtures, friendlies excluded
-//     */
-//    public  List<Fixture> filterRelevantMatches(Map<String, Integer> fixturesByTeamId) {
-//
-//    }
 
     public Predictions calculatePoints(List<Map<String, Integer>> matchesByTeamIds) {
 
         String homeTeam;
         String awayTeam;
-        int matchLeagueId;
+        int homeTeamId;
+        int awayTeamId;
         double homePoints = 0;
         double awayPoints = 0;
         List<Prediction> predictions = new ArrayList<>();
@@ -114,27 +116,17 @@ public class PredictionsService {
 
         for (Map<String, Integer> m : matchesByTeamIds) {
 
-            List<Fixture> homeRelevantMatches = getRelevantFixturesByTeamId(m.get("h"));
-            List <Fixture> awayRelevantMatches = getRelevantFixturesByTeamId(m.get("a"));
+            homeTeamId = m.get("h");
+            awayTeamId = m.get("a");
 
-            try {
-                homeRelevantMatches = homeRelevantMatches.subList(homeRelevantMatches.size() - 6, homeRelevantMatches.size());
-                awayRelevantMatches = awayRelevantMatches.subList(awayRelevantMatches.size() - 6, awayRelevantMatches.size());
-            } catch (IndexOutOfBoundsException e) {
-                System.out.println("one of the teams had less than 6 games in the past 2 months");
-                //TODO: log properly instead of sys out
-            }
+            List<Fixture> homeRelevantMatches = getRelevantFixturesByTeamId(homeTeamId);
+            List <Fixture> awayRelevantMatches = getRelevantFixturesByTeamId(awayTeamId);
 
-            /*
-            method to get team name for later assignment, fix it at one point as it's horrible impl
-             */
             if (homeRelevantMatches.get(0).getHomeTeam().getTeamId().equals(m.get("h"))) {
                  homeTeam = homeRelevantMatches.get(0).getHomeTeam().getTeamName();
-                 matchLeagueId = homeRelevantMatches.get(0).getLeagueId();
 
             } else {
                  homeTeam = homeRelevantMatches.get(0).getAwayTeam().getTeamName();
-                 matchLeagueId = homeRelevantMatches.get(0).getLeagueId();
             }
 
             if (awayRelevantMatches.get(0).getHomeTeam().getTeamId().equals(m.get("a"))) {
@@ -143,56 +135,15 @@ public class PredictionsService {
                  awayTeam = awayRelevantMatches.get(0).getAwayTeam().getTeamName();
             }
 
-            for (Fixture f : homeRelevantMatches) {
 
-                if ((f.getGoalsHomeTeam() == 0) && (f.getGoalsAwayTeam() == 0)) {
-                    homePoints -=2;
-                }
-
-                if ((f.getGoalsHomeTeam() > 0) && (f.getGoalsAwayTeam() > 0) && (f.getHomeTeam().getTeamId().equals(m.get("h")))) {
-                    homePoints += 2;
-                } else if ((f.getGoalsHomeTeam() > 0) && (f.getGoalsAwayTeam() > 0)) {
-                    homePoints += 1;
-                }
-
-                if (f.getGoalsHomeTeam() > 2) {
-                    homePoints += (f.getGoalsHomeTeam() - 2 ) * 0.5;
-                }
-
-                if (f.getGoalsAwayTeam() > 2) {
-                    homePoints += (f.getGoalsAwayTeam() - 2 ) * 0.5;
-                }
-
-            }
-
-            for (Fixture f : awayRelevantMatches) {
-
-                if ((f.getGoalsHomeTeam() == 0) && (f.getGoalsAwayTeam() == 0)) {
-                    awayPoints -=2;
-                }
-
-                if ((f.getGoalsHomeTeam() > 0) && (f.getGoalsAwayTeam() > 0) && (f.getHomeTeam().getTeamId().equals(m.get("a")))) {
-                    awayPoints += 2;
-                } else if ((f.getGoalsHomeTeam() > 0) && (f.getGoalsAwayTeam() > 0)) {
-                    awayPoints += 1;
-                }
-
-                if (f.getGoalsHomeTeam() > 2) {
-                    awayPoints += (f.getGoalsHomeTeam() - 2 ) * 0.5;
-                }
-
-                if (f.getGoalsAwayTeam() > 2) {
-                    awayPoints += (f.getGoalsAwayTeam() - 2 ) * 0.5;
-                }
-
-            }
+            homePoints = calculateTotalPointsForATeam(homeRelevantMatches, homeTeamId);
+            awayPoints = calculateTotalPointsForATeam(awayRelevantMatches, awayTeamId);
 
            double totalPoints = homePoints + awayPoints;
             predictions.add(new Prediction(homeTeam, awayTeam, totalPoints));
             homePoints = 0;
             awayPoints = 0;
         }
-
 
         int totalGames = predictions.size();
         predictions = predictions.stream().filter(p -> (p.getPrediction() >= 16.5)).collect(Collectors.toList());
@@ -205,12 +156,64 @@ public class PredictionsService {
 
     //-------------------------------------------------------//
 
-    private void getPointsWhenGoallessDraw(List<Fixture> relevantMatches) {
+    /**
+     * method calculates the total points of one team within an upcoming match using the past 6 games
+     * this is only a calculation for one team, it needs to be called for the away team as well
+     *
+     * @param relevantMatches 6 most recent matches for one team from a match
+     * @return total points for one team in a match
+     */
+    private double calculateTotalPointsForATeam(List<Fixture> relevantMatches, Integer teamId) {
 
+        double points = 0;
+
+        for (Fixture f : relevantMatches) {
+
+            if (getPointsWhenGoallessDraw(f))
+                points -= 2;
+
+            if (getPointsWhenBothScoredAndTeamIsHome(f, teamId)) {
+                points += 2;
+            } else if (getPointsWhenBothScoredAndTeamIsAway(f)) {
+                points += 1;
+            }
+
+            points += calculatePointsForNumberOfScoredGoalsOverTwo(f.getGoalsHomeTeam());
+
+            points += calculatePointsForNumberOfScoredGoalsOverTwo(f.getGoalsAwayTeam());
+
+        }
+        return points;
+    }
+
+
+    private boolean getPointsWhenGoallessDraw(Fixture fixture) {
+
+        return (fixture.getGoalsHomeTeam() == 0) && (fixture.getGoalsAwayTeam() == 0);
+    }
+
+    private boolean getPointsWhenBothScoredAndTeamIsHome(Fixture fixture, Integer teamId) {
+        return (fixture.getGoalsHomeTeam() > 0) && (fixture.getGoalsAwayTeam() > 0)
+                && (fixture.getHomeTeam().getTeamId().equals(teamId));
+    }
+
+    private boolean getPointsWhenBothScoredAndTeamIsAway(Fixture fixture) {
+        return (fixture.getGoalsHomeTeam() > 0) && (fixture.getGoalsAwayTeam() > 0);
+    }
+
+    private double calculatePointsForNumberOfScoredGoalsOverTwo(int numberOfGoals) {
+        if (numberOfGoals > 2) {
+           return (numberOfGoals - 2) * 0.5;
+        }
+        return 0;
+    }
+
+    private String findTeamName() {
+        //TODO: move team name finding logic here without duplication, not possible to do other way just by calling the api again or maybe I could sub with an object?
     }
 
 }
 
-
+//TODO: add all docs
 //TODO: add favourite point adjustment
 //TODO: refactor code

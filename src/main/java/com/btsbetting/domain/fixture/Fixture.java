@@ -67,55 +67,7 @@ public class Fixture {
     @JsonProperty("score")
     private Score score;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public Fixture() {
-    }
-
-    /**
-     *
-     * @param venue
-     * @param goalsHomeTeam
-     * @param goalsAwayTeam
-     * @param awayTeam
-     * @param fixtureId
-     * @param referee
-     * @param elapsed
-     * @param score
-     * @param round
-     * @param leagueId
-     * @param statusShort
-     * @param homeTeam
-     * @param secondHalfStart
-     * @param firstHalfStart
-     * @param eventDate
-     * @param eventTimestamp
-     * @param status
-     */
-    public Fixture(Integer fixtureId, Integer leagueId, String eventDate, Integer eventTimestamp, Integer firstHalfStart, Object secondHalfStart, String round, String status, String statusShort, Integer elapsed, String venue, Object referee, HomeTeam homeTeam, AwayTeam awayTeam, Integer goalsHomeTeam, Integer goalsAwayTeam, Score score) {
-        super();
-        this.fixtureId = fixtureId;
-        this.leagueId = leagueId;
-        this.eventDate = eventDate;
-        this.eventTimestamp = eventTimestamp;
-        this.firstHalfStart = firstHalfStart;
-        this.secondHalfStart = secondHalfStart;
-        this.round = round;
-        this.status = status;
-        this.statusShort = statusShort;
-        this.elapsed = elapsed;
-        this.venue = venue;
-        this.referee = referee;
-        this.homeTeam = homeTeam;
-        this.awayTeam = awayTeam;
-        this.goalsHomeTeam = goalsHomeTeam;
-        this.goalsAwayTeam = goalsAwayTeam;
-        this.score = score;
-    }
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("fixture_id")
     public Integer getFixtureId() {

@@ -2,6 +2,7 @@ package com.btsbetting.domain.fixture;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,29 +28,7 @@ public class Score {
     @JsonProperty("penalty")
     private Object penalty;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public Score() {
-    }
-
-    /**
-     *
-     * @param halftime
-     * @param penalty
-     * @param fulltime
-     * @param extratime
-     */
-    public Score(String halftime, Object fulltime, Object extratime, Object penalty) {
-        super();
-        this.halftime = halftime;
-        this.fulltime = fulltime;
-        this.extratime = extratime;
-        this.penalty = penalty;
-    }
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("halftime")
     public String getHalftime() {

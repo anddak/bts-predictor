@@ -3,14 +3,14 @@ package com.btsbetting.entity;
 public class Prediction {
 
 
-    String homeTeam;
-    String awayTeam;
-    double prediction;
+    private String homeTeam;
+    private String awayTeam;
+    private double predictionPoints;
 
-    public Prediction(String homeTeam, String awayTeam, double prediction) {
+    public Prediction(String homeTeam, String awayTeam, double predictionPoints) {
         this.homeTeam = homeTeam;
         this.awayTeam = awayTeam;
-        this.prediction = prediction;
+        this.predictionPoints = predictionPoints;
     }
 
     public String getHomeTeam() {
@@ -21,8 +21,8 @@ public class Prediction {
         return awayTeam;
     }
 
-    public double getPrediction() {
-        return prediction;
+    public double getPredictionPoints() {
+        return predictionPoints;
     }
 
 
@@ -31,7 +31,7 @@ public class Prediction {
         return "Prediction{" +
                 ", homeTeam='" + homeTeam + '\'' +
                 ", awayTeam='" + awayTeam + '\'' +
-                ", prediction=" + prediction +
+                ", prediction=" + predictionPoints +
                 '}';
     }
 }

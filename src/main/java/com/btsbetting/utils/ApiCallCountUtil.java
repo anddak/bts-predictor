@@ -13,37 +13,37 @@ import java.util.Date;
 @Component
 public class ApiCallCountUtil {
 
+    private static final String API_COUNT_FILE_PATH = "C:/IntelliJ Projects/bts-betting/src/main/resources/static/apiCalls.txt";
+
     private int totalApiCallsMade = 0;
-    public static int apiCallsMade = 0;
-    LocalDateTime localDateTime = LocalDateTime.now();
-    private File file = new File("C:/IntelliJ Projects/bts-betting/src/main/resources/static/apiCalls.txt");
+    private int apiCallsMade = 0;
+    private LocalDateTime localDateTime = LocalDateTime.now();
+    private File file = new File(API_COUNT_FILE_PATH);
     private LocalDateTime fileLastModified;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ApiCallCountUtil.class);
 
     public Integer readFile() {
 
-        String line = null;
+        String line = "";
 
-        try {
 
-            FileReader fileReader = new FileReader(file);
-            BufferedReader br = new BufferedReader(fileReader);
+        try
 
+                (FileReader fileReader = new FileReader(file);
+                 BufferedReader br = new BufferedReader(fileReader)
+                ) {
             fileLastModified = Date.from(Instant.ofEpochMilli(file.lastModified())).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             line = br.readLine();
 
-            fileReader.close();
-            br.close();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (IOException ex) {
+            LOGGER.error("Issue when reading the api counter file ", ex);
         }
 
         return Integer.parseInt(line);
     }
 
-    public void updateCallCount(Integer line) {
+    private void updateCallCount(Integer line) {
 
         if ((localDateTime.getDayOfWeek() == fileLastModified.getDayOfWeek()) && (localDateTime.getMonth() == fileLastModified.getMonth())) {
 
@@ -58,24 +58,23 @@ public class ApiCallCountUtil {
     }
 
 
-    public void writeFile() {
+    private void writeFile() {
 
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(file);
+        try
+                (FileWriter fileWriter = new FileWriter(file)) {
 
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write("");
-        bufferedWriter.flush();
-        bufferedWriter.write(Integer.toString(totalApiCallsMade));
-        bufferedWriter.flush();
-        bufferedWriter.close();
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write("");
+            bufferedWriter.flush();
+            bufferedWriter.write(Integer.toString(totalApiCallsMade));
+            bufferedWriter.flush();
+            bufferedWriter.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Issue when writing the api counter file ", e);
         }
 
-        LOGGER.info("Number of calls within the last quota: " + totalApiCallsMade);
+        LOGGER.info("Number of calls within today's quota quota: {}", totalApiCallsMade);
 
         totalApiCallsMade = 0;
         apiCallsMade = 0;
@@ -87,4 +86,11 @@ public class ApiCallCountUtil {
         writeFile();
     }
 
+    public int getApiCallsMade() {
+        return apiCallsMade;
+    }
+
+    public void setApiCallsMade(int apiCallsMade) {
+        this.apiCallsMade = apiCallsMade;
+    }
 }

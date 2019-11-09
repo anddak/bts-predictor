@@ -2,6 +2,7 @@ package com.btsbetting.domain.fixture;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -24,27 +25,7 @@ public class AwayTeam {
     @JsonProperty("logo")
     private String logo;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public AwayTeam() {
-    }
-
-    /**
-     *
-     * @param teamName
-     * @param teamId
-     * @param logo
-     */
-    public AwayTeam(Integer teamId, String teamName, String logo) {
-        super();
-        this.teamId = teamId;
-        this.teamName = teamName;
-        this.logo = logo;
-    }
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("team_id")
     public Integer getTeamId() {

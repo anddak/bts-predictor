@@ -1,7 +1,9 @@
 package com.btsbetting.client;
 
+import com.btsbetting.constants.FootballApiConstants;
 import com.btsbetting.domain.ApiWrapper;
 import com.btsbetting.utils.ApiCallCountUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -9,42 +11,48 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class ApiFootballClient {
 
-    private ApiCallCountUtil apiCallCountUtil = new ApiCallCountUtil();
+    private ApiCallCountUtil apiCallCountUtil;
+
+    public ApiFootballClient() {
+    }
+
+    @Autowired
+    public ApiFootballClient(ApiCallCountUtil apiCallCountUtil) {
+        this.apiCallCountUtil = apiCallCountUtil;
+    }
 
     private RestTemplate restTemplate = new RestTemplate();
-
-    HttpHeaders header = new HttpHeaders();
-    HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
-
-
+    private HttpHeaders header = new HttpHeaders();
 
     public ApiWrapper getFixturesByDate(String date) {
 
-        String url = "https://api-football-v1.p.rapidapi.com/v2/fixtures/date/" +
+        String url = FootballApiConstants.GET_FIXTURES_BY_DATE_URL +
                 date +
-                "?timezone=Europe/London";
+                FootballApiConstants.TIMEZONE_URL;
 
-        header.set("X-RapidAPI-Key", "61a1245a08msh9e6892b746bc888p10ae22jsnb8796cc88e31");
+        header.set(FootballApiConstants.API_HEADER, FootballApiConstants.API_KEY);
         header.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
-        ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request , ApiWrapper.class);
+        ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request, ApiWrapper.class);
 
-        ApiCallCountUtil.apiCallsMade += 1;
+        apiCallCountUtil.setApiCallsMade(apiCallCountUtil.getApiCallsMade()+1);
         return response.getBody();
     }
 
     public ApiWrapper getFixturesByTeamId(int teamId) {
 
-        String url = "https://api-football-v1.p.rapidapi.com/v2/fixtures/team/" + teamId + "?timezone=Europe/London";
+        String url = FootballApiConstants.GET_FIXTURES_BY_TEAM_ID +
+                teamId +
+                FootballApiConstants.TIMEZONE_URL;
 
-        header.set("X-RapidAPI-Key", "61a1245a08msh9e6892b746bc888p10ae22jsnb8796cc88e31");
+        header.set(FootballApiConstants.API_HEADER, FootballApiConstants.API_KEY);
         header.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<ApiWrapper> request = new HttpEntity<>(header);
-        ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request , ApiWrapper.class);
+        ResponseEntity<ApiWrapper> response = restTemplate.exchange(url, HttpMethod.GET, request, ApiWrapper.class);
 
-        ApiCallCountUtil.apiCallsMade += 1;
+        apiCallCountUtil.setApiCallsMade(apiCallCountUtil.getApiCallsMade()+1);
         return response.getBody();
     }
 

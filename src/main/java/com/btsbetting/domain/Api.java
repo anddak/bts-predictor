@@ -24,25 +24,7 @@ public class Api {
     @JsonProperty("fixtures")
     private List<Fixture> fixtures = null;
     @JsonIgnore
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    /**
-     * No args constructor for use in serialization
-     *
-     */
-    public Api() {
-    }
-
-    /**
-     *
-     * @param results
-     * @param fixtures
-     */
-    public Api(Integer results, List<Fixture> fixtures) {
-        super();
-        this.results = results;
-        this.fixtures = fixtures;
-    }
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonProperty("results")
     public Integer getResults() {

@@ -5,7 +5,7 @@ import java.util.List;
 public class Predictions {
 
     private int totalAnalysedGames;
-    private List<Prediction> predictions;
+    private List<Prediction> predictionList;
 
     public int getTotalAnalysedGames() {
         return totalAnalysedGames;
@@ -15,16 +15,16 @@ public class Predictions {
         this.totalAnalysedGames = totalAnalysedGames;
     }
 
-    public List<Prediction> getPredictions() {
-        return predictions;
+    public List<Prediction> getPredictionList() {
+        return predictionList;
     }
 
-    public void setPredictions(List<Prediction> predictions) {
-        this.predictions = predictions;
+    public void setPredictionList(List<Prediction> predictionList) {
+        this.predictionList = predictionList;
     }
 
-    public Predictions(int totalAnalysedGames, List<Prediction> predictions) {
+    public Predictions(int totalAnalysedGames, List<Prediction> predictionList) {
         this.totalAnalysedGames = totalAnalysedGames;
-        this.predictions = predictions;
+        this.predictionList = predictionList;
     }
 }

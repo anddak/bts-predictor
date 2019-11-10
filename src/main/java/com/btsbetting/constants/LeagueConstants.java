@@ -17,6 +17,7 @@ public class LeagueConstants {
     private static final int ENGLISH_PREMIER = 524;
     private static final int ENGLAND_2 = 565;
     private static final int ENGLAND_3 = 581;
+    private static final int EURO = 403;
     private static final int ENGLAND_4 = 582;
     private static final int FINLAND_1 = 361;
     private static final int FRENCH_1 = 525;
@@ -55,7 +56,7 @@ public class LeagueConstants {
             NORWAY_1, NETHERLANDS_2, MEXICO_1, HUNGARY_1, GERMAN_2, FRENCH_2, FINLAND_1, ENGLAND_4, ENGLAND_3, ENGLAND_2,
             CHAMPIONS_LEAGUE, CZECH_REP, BRAZIL_1, FRENCH_1, GERMAN_1, ITALY_1, NETHERLANDS_1, PORTUGAL_1, ROMANIA_1,
             BELGIUM_1, AUSTRIA_1, ARGENTINA_1, RUSSIA_1, SPAIN_1, TURKEY_1, DENMARK_1,
-            CROATIA_1, GREECE_1, AUSTRALIA_1, ITALY_2);
+            CROATIA_1, GREECE_1, AUSTRALIA_1, ITALY_2, EURO);
 
 
     public static List<Integer> getLeagueIds() {

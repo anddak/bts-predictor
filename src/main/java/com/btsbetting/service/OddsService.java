@@ -79,7 +79,7 @@ public class OddsService {
         if (homeOdds < awayOdds) {
             return (homeOdds <= 1.85) ? -2 : 1;
         } else {
-            return (awayOdds >= 1.80) ? 2 : -1;
+            return (awayOdds >= 1.90) ? 2 : -1;
         }
     }
 }

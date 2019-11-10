@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.btsbetting.domain.coach.Coach;
 import com.btsbetting.domain.fixture.Fixture;
+import com.btsbetting.domain.odds.Odd;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,10 +23,16 @@ public class Api {
 
     @JsonProperty("results")
     private Integer results;
+
     @JsonProperty("coachs")
     public List<Coach> coachs = null;
+
+    @JsonProperty("odds")
+    private List<Odd> odds = null;
+
     @JsonProperty("fixtures")
     private List<Fixture> fixtures = null;
+
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -57,6 +64,11 @@ public class Api {
     @JsonProperty("fixtures")
     public void setFixtures(List<Fixture> fixtures) {
         this.fixtures = fixtures;
+    }
+
+    @JsonProperty("odds")
+    public List<Odd> getOdds() {
+        return odds;
     }
 
     @JsonAnyGetter

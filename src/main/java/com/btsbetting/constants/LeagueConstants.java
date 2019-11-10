@@ -57,6 +57,7 @@ public class LeagueConstants {
             BELGIUM_1, AUSTRIA_1, ARGENTINA_1, RUSSIA_1, SPAIN_1, TURKEY_1, DENMARK_1,
             CROATIA_1, GREECE_1, AUSTRALIA_1, ITALY_2);
 
+
     public static List<Integer> getLeagueIds() {
         return leagueIds;
     }

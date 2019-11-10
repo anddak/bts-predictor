@@ -2,6 +2,7 @@ package com.btsbetting;
 
 import com.btsbetting.client.ApiFootballClient;
 import com.btsbetting.service.CalculationService;
+import com.btsbetting.service.OddsService;
 import com.btsbetting.service.RefineFixtureService;
 import com.btsbetting.utils.ApiCallCountUtil;
 import org.springframework.boot.SpringApplication;
@@ -30,6 +31,9 @@ public class BtsBettingApplication {
 
 	@Bean
 	public RefineFixtureService getRefineFixtureService() { return new RefineFixtureService(); }
+
+	@Bean
+	public OddsService getOddsService() { return new OddsService(); }
 
 
 }

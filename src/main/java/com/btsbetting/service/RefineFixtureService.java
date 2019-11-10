@@ -79,7 +79,7 @@ public class RefineFixtureService {
             Map<String, Integer> teamId = new HashMap<>();
             teamId.put("h", f.getHomeTeam().getTeamId());
             teamId.put("a", f.getAwayTeam().getTeamId());
-            Match match = new Match(teamId, f.getHomeTeam().getTeamName(), f.getAwayTeam().getTeamName());
+            Match match = new Match(teamId, f.getHomeTeam().getTeamName(), f.getAwayTeam().getTeamName(), f.getFixtureId());
 
             teamIds.add(match);
         }
@@ -102,7 +102,7 @@ public class RefineFixtureService {
         try {
             fixtures = fixtures.subList(fixtures.size() - 6, fixtures.size());
         } catch (IndexOutOfBoundsException e) {
-            LOGGER.error("Team " + teamId + "had less than 6 games in the past 60 days", e);
+            LOGGER.error("Team " + teamId + " had less than 6 games in the past 60 days", e);
         }
 
         return fixtures;

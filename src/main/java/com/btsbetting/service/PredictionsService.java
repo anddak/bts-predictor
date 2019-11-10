@@ -19,12 +19,14 @@ public class PredictionsService {
     private ApiCallCountUtil apiCallCountUtil;
     private CalculationService calculationService;
     private RefineFixtureService refineFixtureService;
+    private OddsService oddsService;
 
     @Autowired
-    public PredictionsService(ApiCallCountUtil apiCallCountUtil, CalculationService calculationService, RefineFixtureService refineFixtureService) {
+    public PredictionsService(ApiCallCountUtil apiCallCountUtil, CalculationService calculationService, RefineFixtureService refineFixtureService, OddsService oddsService) {
         this.apiCallCountUtil = apiCallCountUtil;
         this.calculationService = calculationService;
         this.refineFixtureService = refineFixtureService;
+        this.oddsService = oddsService;
     }
 
     public Predictions generateFinalPrediction(List<Match> refinedMatchesByLeagueDateAndEligibility) {
@@ -40,19 +42,28 @@ public class PredictionsService {
 
             if (refineFixtureService.isCoachEmployedForLongEnoughRefine(m)) {
 
+
+
                 List<Fixture> homeRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(homeTeamId);
                 List<Fixture> awayRelevantMatches = refineFixtureService.getRelevantFixturesByTeamId(awayTeamId);
 
-                double totalPoints = calculationService.sumPoints(homeRelevantMatches, homeTeamId) + calculationService.sumPoints(awayRelevantMatches, awayTeamId);
-                predictions.add(new Prediction(m.getHomeTeamName(), m.getAwayTeamName(), totalPoints));
+                double totalPoints = calculationService.sumPoints(homeRelevantMatches, homeTeamId)
+                        + calculationService.sumPoints(awayRelevantMatches, awayTeamId);
 
+                 double oddsAdjustmentPoints = oddsService.retrieveOddAdjustmentForFavourite(m.getFixtureId(), totalPoints);
+
+                predictions.add(new Prediction(
+                        m.getHomeTeamName(),
+                        m.getAwayTeamName(),
+                        totalPoints+oddsAdjustmentPoints,
+                        oddsAdjustmentPoints
+                ));
             }
         }
 
         apiCallCountUtil.countCalls();
 
         return generatePredictionsObject(predictions);
-
     }
 
     /**
@@ -66,5 +77,5 @@ public class PredictionsService {
 }
 
 //TODO: add all docs
-//TODO: add favourite point adjustment
-//TODO: add league - todo this, I need to convert league constants to enum
+//TODO: better logging for api calls and all sorts of adjustments
+//TODO: unit tests

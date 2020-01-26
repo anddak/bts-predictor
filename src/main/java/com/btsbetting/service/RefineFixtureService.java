@@ -96,7 +96,7 @@ public class RefineFixtureService {
         List<Fixture> fixtures = apiFootballClient.getFixturesByTeamId(teamId).getApi().getFixtures()
                 .stream()
                 .filter(fixture -> fixture.getStatusShort().equals("FT")
-                        && ((currentUnixTime - fixture.getEventTimestamp()) < 5184000)
+                        && ((currentUnixTime - fixture.getEventTimestamp()) <6048000)
                         && (fixture.getLeagueId() != 803)).collect(Collectors.toList());
 
         try {

@@ -2,6 +2,8 @@ package com.btsbetting.service;
 
 import com.btsbetting.client.ApiFootballClient;
 import com.btsbetting.entity.MatchOdds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 @Service
 public class OddsService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApiFootballClient.class);
 
     private ApiFootballClient apiFootballClient;
 
@@ -30,20 +33,27 @@ public class OddsService {
      */
     public double retrieveOddAdjustmentForFavourite(int fixtureId, double totalPoints) {
 
+
         if (totalPoints >= 16.5) {
 
-            MatchOdds matchOdds = new MatchOdds(apiFootballClient.getOddsByFixtureIdAndLabel(fixtureId)
-                    .getApi()
-                    .getOdds().get(0)
-                    .getBookmakers()
-                    .get(0)
-                    .getBets()
-                    .get(0)
-                    .getValues());
+            try {
 
-            return calculatePointAdjustmentBasedOnOdds(
-                    retrievePlayingStatusSpecificOdds(matchOdds, "Home"),
-                    retrievePlayingStatusSpecificOdds(matchOdds, "Away"));
+                MatchOdds matchOdds = new MatchOdds(apiFootballClient.getOddsByFixtureIdAndLabel(fixtureId)
+                        .getApi()
+                        .getOdds().get(0)
+                        .getBookmakers()
+                        .get(0)
+                        .getBets()
+                        .get(0)
+                        .getValues());
+
+                return calculatePointAdjustmentBasedOnOdds(
+                        retrievePlayingStatusSpecificOdds(matchOdds, "Home"),
+                        retrievePlayingStatusSpecificOdds(matchOdds, "Away"));
+
+            } catch (IndexOutOfBoundsException ex) {
+               LOGGER.error("Issue with odds ", ex.getMessage());
+            }
 
         }
 

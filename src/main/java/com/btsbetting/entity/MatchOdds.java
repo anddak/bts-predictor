@@ -12,6 +12,9 @@ public class MatchOdds {
         this.odds = odds;
     }
 
+    public MatchOdds() {
+    }
+
     public List<Values> getOdds() {
         return odds;
     }

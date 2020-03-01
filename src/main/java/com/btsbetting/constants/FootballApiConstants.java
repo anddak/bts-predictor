@@ -10,7 +10,7 @@ public class FootballApiConstants {
     public static final String TIMEZONE_URL = "?timezone=Europe/London";
 
     public static final String API_HEADER = "X-RapidAPI-Key";
-    public static final String API_KEY = "61a1245a08msh9e6892b746bc888p10ae22jsnb8796cc88e31";
+    public static final String API_KEY = ""; //rapidApi key here, extract to .yaml later
 
     private FootballApiConstants() {
         throw new IllegalStateException("Utility class");
